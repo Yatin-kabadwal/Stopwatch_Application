@@ -7,30 +7,32 @@
     android:padding="16dp">
 
     <TextView
-        android:id="@+id/textViewTimer"
+        android:id="@+id/timerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="00:00:00"
         android:textSize="48sp"
-        android:text="00:00:00" />
+        android:layout_marginBottom="32dp"
+        android:textColor="@android:color/black"/>
 
     <Button
-        android:id="@+id/buttonStart"
+        android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Start"
-        android:layout_marginTop="16dp" />
+        android:layout_marginBottom="16dp"/>
 
     <Button
-        android:id="@+id/buttonPause"
+        android:id="@+id/pauseButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Pause"
-        android:layout_marginTop="16dp" />
+        android:layout_marginBottom="16dp"/>
 
     <Button
-        android:id="@+id/buttonReset"
+        android:id="@+id/resetButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Reset"
-        android:layout_marginTop="16dp" />
+        android:text="Reset"/>
+
 </LinearLayout>

@@ -2,79 +2,77 @@ package com.example.stopwatchapp
 
 import android.os.Bundle
 import android.os.Handler
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Looper
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var textViewTimer: TextView
-    private lateinit var buttonStart: Button
-    private lateinit var buttonPause: Button
-    private lateinit var buttonReset: Button
+    private lateinit var timerTextView: TextView
+    private lateinit var startButton: Button
+    private lateinit var pauseButton: Button
+    private lateinit var resetButton: Button
 
-    private var isRunning = false
-    private var elapsedTime = 0L
     private var startTime = 0L
+    private var timeInMilliseconds = 0L
+    private var handler = Handler(Looper.getMainLooper())
+    private var isRunning = false
 
-    private val handler = Handler()
+    private val runnable = object : Runnable {
+        override fun run() {
+            timeInMilliseconds = System.currentTimeMillis() - startTime
+            val seconds = (timeInMilliseconds / 1000).toInt() % 60
+            val minutes = (timeInMilliseconds / (1000 * 60)).toInt() % 60
+            val milliseconds = (timeInMilliseconds % 1000).toInt() / 10
+
+            val timeString = String.format("%02d:%02d:%02d", minutes, seconds, milliseconds)
+            timerTextView.text = timeString
+            handler.postDelayed(this, 50)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        textViewTimer = findViewById(R.id.textViewTimer)
-        buttonStart = findViewById(R.id.buttonStart)
-        buttonPause = findViewById(R.id.buttonPause)
-        buttonReset = findViewById(R.id.buttonReset)
+        timerTextView = findViewById(R.id.timerTextView)
+        startButton = findViewById(R.id.startButton)
+        pauseButton = findViewById(R.id.pauseButton)
+        resetButton = findViewById(R.id.resetButton)
 
-        buttonStart.setOnClickListener {
+        startButton.setOnClickListener {
             startTimer()
         }
 
-        buttonPause.setOnClickListener {
+        pauseButton.setOnClickListener {
             pauseTimer()
         }
 
-        buttonReset.setOnClickListener {
+        resetButton.setOnClickListener {
             resetTimer()
         }
     }
 
     private fun startTimer() {
         if (!isRunning) {
-            startTime = System.currentTimeMillis() - elapsedTime
-            handler.postDelayed(updateTimerRunnable, 0)
+            startTime = System.currentTimeMillis() - timeInMilliseconds
+            handler.post(runnable)
             isRunning = true
         }
     }
 
     private fun pauseTimer() {
         if (isRunning) {
-            handler.removeCallbacks(updateTimerRunnable)
-            elapsedTime = System.currentTimeMillis() - startTime
+            handler.removeCallbacks(runnable)
             isRunning = false
         }
     }
 
     private fun resetTimer() {
-        handler.removeCallbacks(updateTimerRunnable)
-        elapsedTime = 0L
-        textViewTimer.text = "00:00:00"
+        handler.removeCallbacks(runnable)
         isRunning = false
-    }
-
-    private val updateTimerRunnable = object : Runnable {
-        override fun run() {
-            val currentTime = System.currentTimeMillis()
-            val elapsedTime = currentTime - startTime
-            val seconds = (elapsedTime / 1000) % 60
-            val minutes = (elapsedTime / (1000 * 60)) % 60
-            val hours = (elapsedTime / (1000 * 60 * 60)) % 24
-
-            textViewTimer.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
-
-            handler.postDelayed(this, 1000)
-        }
+        timeInMilliseconds = 0L
+        timerTextView.text = "00:00:00"
     }
 }
